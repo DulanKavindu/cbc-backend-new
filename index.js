@@ -6,9 +6,11 @@ import studentRouter from './routers/student_router.js';
 import productRouter from './routers/product.js';
 import userRouter from './routers/user.js';
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv"
+dotenv.config()
 const app = express();
 app.use(bodyParser.json());
-const mongodburl="mongodb+srv://admin:123@cluster0.jkzrllu.mongodb.net/?appName=Cluster0";
+const mongodburl=process.env.MONGO_DB_URI
 
 mongoose.connect(mongodburl, {})
 

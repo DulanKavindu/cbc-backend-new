@@ -28,17 +28,18 @@ function createProduct(req, res) {
       
 
 }
-function getProducts(req, res) {
-    products.find().then((productlist)=>{
-        res.json({
-            products: productlist
-        })
-    }).catch((err)=>{
-        res.status(400).json({
-            message: "Error in Fetching Products",
-            error: err
-        })
+async function getProducts(req, res) {
+    try{
+    const productList =await products.find();
+    res.json({
+        list:productList
     })
+   }catch(err){
+    res.status(400).json({
+        message: "Error in Fetching Products",
+        error: err
+    })
+   }
 }
 function deleteProduct(req, res) {
     products.deleteOne({name: req.body.name}).then(()=>{
