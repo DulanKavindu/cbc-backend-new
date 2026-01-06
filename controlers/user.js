@@ -38,7 +38,7 @@ export function loginUser(req,res){
                   type    :firstUserOfList.type,
                   profilepic:firstUserOfList.profilepic
 
-                }, SECRET_KEY,)
+                }, process.envSECRET_KEY,)
                 res.json({
                     massage:"login successful",
                     token:token
