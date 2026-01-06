@@ -21,7 +21,7 @@ connection.once("open",()=>{
 app.use((req,res,next)=>{
   const token=req.header("Authorization")?.replace("Bearer ","");
   if(token!=null){
-    jwt.verify(token,"secretkey-7030",(err,decoded)=>{
+    jwt.verify(token,SECRET_KEY,(err,decoded)=>{
       if(!err){
         req.user=decoded;
         next();
