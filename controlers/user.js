@@ -4,6 +4,21 @@ import  jwt  from "jsonwebtoken";
 
 export function addUser(req, res) {
     const newData= req.body;
+    if(newData.type=="admin"){
+        if(req.user==null){
+            res.json({
+                massage:"first you have to Login"
+        })
+        return
+    }
+        if(req.user.type!="admin"){
+            res.json({
+                massage:"only admin can create another admin"
+        })
+        return
+        }
+
+    }
     newData.password= bcrypt.hashSync(newData.password, 10);
     const newUser = new User (newData);
 
@@ -31,14 +46,14 @@ export function loginUser(req,res){
             const checkPassword=bcrypt.compareSync(req.body.password, firstUserOfList.password);
             if(checkPassword){
                 const token=jwt.sign({
-                      email : firstUserOfList.email,
+                  email : firstUserOfList.email,
                   firstname : firstUserOfList.firstname,
                   lastname :firstUserOfList.lastname,
                   isBlocked :firstUserOfList.isBlocked,
                   type    :firstUserOfList.type,
                   profilepic:firstUserOfList.profilepic
 
-                }, process.envSECRET_KEY,)
+                }, process.env.SECRET_KEY,)
                 res.json({
                     massage:"login successful",
                     token:token
@@ -63,3 +78,8 @@ export function loginUser(req,res){
         })
     })
  }
+
+  
+// "email": "admin@system1.com", "password": "admin@123"
+// 
+// "email": "admin@system5.com", "password": "admin@123" -customer

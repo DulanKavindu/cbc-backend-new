@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import student from './models/students.js';
-import studentRouter from './routers/student_router.js';
-import productRouter from './routers/product.js';
+
+
+
 import userRouter from './routers/user.js';
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv"
@@ -21,7 +21,7 @@ connection.once("open",()=>{
 app.use((req,res,next)=>{
   const token=req.header("Authorization")?.replace("Bearer ","");
   if(token!=null){
-    jwt.verify(token,process.envSECRET_KEY,(err,decoded)=>{
+    jwt.verify(token,process.env.SECRET_KEY,(err,decoded)=>{
       if(!err){
         req.user=decoded;
         next();
@@ -31,8 +31,8 @@ app.use((req,res,next)=>{
   
 })
 
-app.use("/student", studentRouter);
-app.use("/product", productRouter);
+
+
 app.use("/user", userRouter);
  
 
