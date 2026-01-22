@@ -56,7 +56,15 @@ export function loginUser(req,res){
                 }, process.env.SECRET_KEY,)
                 res.json({
                     massage:"login successful",
-                    token:token
+                    token:token,
+                    user:{
+                        email : firstUserOfList.email,
+                        firstname : firstUserOfList.firstname,
+                        lastname : firstUserOfList.lastname,
+                       
+                        type    : firstUserOfList.type,
+                        profilepic:firstUserOfList.profilepic
+                    }
                 })
 
             }else{

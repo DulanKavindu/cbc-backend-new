@@ -42,3 +42,32 @@ export function createProduct(req,res){
         })
     }
 }
+
+export function deleteProduct(req, res) {
+ 
+  if (!req.user) {
+    return res.status(401).json({ massage: "first you have to login" });
+  }
+
+ 
+  if (req.user.type !== "admin") {
+    return res.status(403).json({ massage: "only admin can delete product" });
+  }
+
+
+  const productidd = req.params.productid;
+
+  product.deleteOne({ productid: productidd })
+    .then((result) => {
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ massage: "Product not found in DB" });
+      }
+      res.json({ massage: "product deleted" });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        massage: "product not deleted",
+        error: err.message
+      });
+    });
+}
