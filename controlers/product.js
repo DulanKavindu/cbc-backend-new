@@ -71,3 +71,26 @@ export function deleteProduct(req, res) {
       });
     });
 }
+
+export function editproduct(req,res){
+    if(!isAdmin(req,res)){
+        res.json({     
+            massage:"only admin can edit product" 
+
+        })
+        return
+
+    }
+    const productid= req.params.productid
+    const newProductData = req.body
+    product.updateOne({productid:productid},newProductData).then(()=>{  
+        res.json({
+            massage:"product updated"
+        })
+
+    }).catch((error)=>{
+       res.json({
+        error:error
+       })
+    })
+}
