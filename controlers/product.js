@@ -33,9 +33,9 @@ export function createProduct(req,res){
  export async function getProduct(req,res){
     try{
    const list=await product.find({});
-   res.json({
-    list:list
-   })
+   res.json(
+    list
+   )
     }catch(err){
         res.json({
             error:err
