@@ -9,3 +9,4 @@ productRouter.delete("/:productid",deleteProduct );
 productRouter.put("/:productid",editproduct)
 productRouter.get("/:productid",getProductById)
 
+export default productRouter;
