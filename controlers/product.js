@@ -98,9 +98,9 @@ export async function getProductById(req,res){
     const productid=req.params.productid   
     try{
         const productData = await product.findOne({productid:productid})
-        res.json({
-            product:productData
-        })
+        res.json(
+            productData
+        )
     }catch(err){
         res.json({
             error:err.message
