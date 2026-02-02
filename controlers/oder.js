@@ -101,12 +101,12 @@ export async function getQuter(req, res) {
       } else {
         productArray[i] = {
           name: productData.productname,
-          price: productData.lasttprice,
+          price: productData.lasprice,
           quantity: orderDetails[i].quantity,
           image: productData.image[0]
         };
 
-        total += productData.lastprice * orderDetails[i].quantity;
+        total += productData.lasprice * orderDetails[i].quantity;
         labaleTotal += productData.price * orderDetails[i].quantity;
       }
     }
