@@ -83,52 +83,43 @@ export function getOrders(req, res) {
 }
 
 export async function getQuter(req, res) {
-
   let total = 0;
   let labaleTotal = 0;
 
   try {
-  
-    const  orderDetails  = req.body; 
-
-    if (!orderDetails || !Array.isArray(orderDetails)) {
-      return res.status(400).json({ message: "Invalid order details" });
-    }
-
+    const orderDetails = req.body.orderDetails;
     const productArray = [];
 
     for (let i = 0; i < orderDetails.length; i++) {
-    
       const productData = await product.findOne({ productid: orderDetails[i].productId });
 
-      if (!productData) {
-        return res.status(404).json({
-          message: "Product not found: " + orderDetails[i].productId
+      if (productData == null) {
+        res.status(404).json({
+          message: "product id " + orderDetails[i].productId + " not found"
         });
+        return;
+      } else {
+        productArray[i] = {
+          name: productData.productname,
+          price: productData.price,
+          quantity: orderDetails[i].quantity,
+          image: productData.image[0]
+        };
+
+        total += productData.price * orderDetails[i].quantity;
+        labaleTotal += productData.price * orderDetails[i].quantity;
       }
-
-      productArray[i] = {
-        name: productData.productname,
-        price: productData.price, 
-        quantity: orderDetails[i].quantity,
-        image: productData.image[0]
-      };
-
-     
-      total += productData.price * orderDetails[i].quantity;
-      labaleTotal += productData.price * orderDetails[i].quantity; 
     }
 
     res.json({
-      items: productArray,
+      orderedItems: productArray,
       totalPrice: total,
       labaleTotal: labaleTotal
     });
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ 
-      message: "Internal Server Error", 
+      message: "Order calculation failed", 
       error: err.message 
     });
   }
