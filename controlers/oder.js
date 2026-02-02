@@ -84,47 +84,52 @@ export function getOrders(req, res) {
 
 export async function getQuter(req, res) {
 
- 
-const total=0;
-const labaleTotal=0;
+  let total = 0;
+  let labaleTotal = 0;
+
   try {
-    
+  
+    const  orderDetails  = req.body; 
 
-    const orderDetails = req.body;
-    const productArray = [];
-    for (let i = 0; i < orderDetails.orderedItems.length; i++) {
-      const productData = await product.findOne({ productId: orderDetails.orderedItems[i].productId });
-
-      if (productData == null) {
-        res.json({
-          message: "product id " + orderDetails.orderedItems[i].productId + " not found"
-        });
-        return;
-      } else {
-        productArray[i] = {
-          name: productData.productname,
-          price: productData.lasprice,
-          quantity: orderDetails.orderedItems[i].quantity,
-          image: productData.image[0]
-        };
-      }
-      total += productData.lasprice * orderDetails.orderedItems[i].quantity;
-      labaleTotal += productData.price * orderDetails.orderedItems[i].quantity;
+    if (!orderDetails || !Array.isArray(orderDetails)) {
+      return res.status(400).json({ message: "Invalid order details" });
     }
 
-    orderDetails.orderedItems = productArray;
+    const productArray = [];
+
+    for (let i = 0; i < orderDetails.length; i++) {
+    
+      const productData = await product.findOne({ productid: orderDetails[i].productId });
+
+      if (!productData) {
+        return res.status(404).json({
+          message: "Product not found: " + orderDetails[i].productId
+        });
+      }
+
+      productArray[i] = {
+        name: productData.productname,
+        price: productData.price, 
+        quantity: orderDetails[i].quantity,
+        image: productData.image[0]
+      };
+
+     
+      total += productData.price * orderDetails[i].quantity;
+      labaleTotal += productData.price * orderDetails[i].quantity; 
+    }
+
     res.json({
-      orderDetails: orderDetails,
-      total: total,
+      items: productArray,
+      totalPrice: total,
       labaleTotal: labaleTotal
     });
-    
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ 
-      message: "Order not created", 
+      message: "Internal Server Error", 
       error: err.message 
     });
   }
 }
- 
