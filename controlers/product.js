@@ -101,6 +101,7 @@ export async function getProductById(req,res){
         res.json(
             productData
         )
+        console.log(productid)
     }catch(err){
         res.json({
             error:err.message

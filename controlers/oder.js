@@ -41,8 +41,9 @@ export async function createOrder(req, res) {
       } else {
         productArray[i] = {
           name: productData.productname,
-          price: productData.price,
+          price: productData.lasprice,
           quantity: orderDetails.orderedItems[i].quantity,
+          discount: productData.price - productData.lasprice,
           image: productData.image[0]
         };
       }
@@ -80,3 +81,50 @@ export function getOrders(req, res) {
     });
   });
 }
+
+export async function getQuter(req, res) {
+
+ 
+const total=0;
+const labaleTotal=0;
+  try {
+    
+
+    const orderDetails = req.body;
+    const productArray = [];
+    for (let i = 0; i < orderDetails.orderedItems.length; i++) {
+      const productData = await product.findOne({ productId: orderDetails.orderedItems[i].productId });
+
+      if (productData == null) {
+        res.json({
+          message: "product id " + orderDetails.orderedItems[i].productId + " not found"
+        });
+        return;
+      } else {
+        productArray[i] = {
+          name: productData.productname,
+          price: productData.lasprice,
+          quantity: orderDetails.orderedItems[i].quantity,
+          image: productData.image[0]
+        };
+      }
+      total += productData.lasprice * orderDetails.orderedItems[i].quantity;
+      labaleTotal += productData.price * orderDetails.orderedItems[i].quantity;
+    }
+
+    orderDetails.orderedItems = productArray;
+    res.json({
+      orderDetails: orderDetails,
+      total: total,
+      labaleTotal: labaleTotal
+    });
+    
+
+  } catch (err) {
+    res.status(500).json({ 
+      message: "Order not created", 
+      error: err.message 
+    });
+  }
+}
+ 
