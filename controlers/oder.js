@@ -3,8 +3,6 @@ import product from "../models/product.js";
 import { isCustomer } from "./user.js";
 
 export async function createOrder(req, res) {
- 
-  
   if (!isCustomer(req, res)) {
     res.json({
       message: "only customer can create order"
@@ -23,32 +21,41 @@ export async function createOrder(req, res) {
       newOrderId = "CBC" + newNumericPart.toString().padStart(4, "0");
     }
 
-    const orderDetails = req.body;
+
+    const orderDetails = req.body; 
     const productArray = [];
-    for (let i = 0; i < orderDetails.orderedItems.length; i++) {
-      const productData = await product.findOne({ productId: orderDetails.orderedItems[i].productId });
+  
+    let total = 0; 
+
+    for (let i = 0; i < orderDetails.orderDetails.length; i++) {
+      
+      const productData = await product.findOne({ productid: orderDetails.orderDetails[i].productId });
 
       if (productData == null) {
         res.json({
-          message: "product id " + orderDetails.orderedItems[i].productId + " not found"
+          message: "product id " + orderDetails.orderDetails[i].productId + " not found"
         });
         return;
       } else {
         productArray[i] = {
           name: productData.productname,
           price: productData.lasprice,
-          quantity: orderDetails.orderedItems[i].quantity,
+          quantity: orderDetails.orderDetails[i].quantity,
           discount: productData.price - productData.lasprice,
           image: productData.image[0]
         };
       }
     }
 
-    orderDetails.orderedItems = productArray;
-    orderDetails.orderId = newOrderId;
-    orderDetails.email = req.user.email;
+   
+    const finalOrderDetails = {
+        orderedItems: productArray,
+        orderId: newOrderId,
+        email: req.user.email,
+        date: new Date()
+    };
 
-    const newOrderData = new Order(orderDetails);
+    const newOrderData = new Order(finalOrderDetails);
     await newOrderData.save();
 
     res.json({ 
@@ -65,7 +72,6 @@ export async function createOrder(req, res) {
 }
 
 export function getOrders(req, res) {
-  
   Order.find().then((list) => {
     res.json({
       list: list
