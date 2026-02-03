@@ -22,7 +22,7 @@ export async function createOrder(req, res) {
     }
 
 
-    const orderDetails = req.body; 
+    const orderDetails = req.body.orderDetails; 
     const productArray = [];
   
     let total = 0; 
