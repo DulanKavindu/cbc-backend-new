@@ -26,21 +26,21 @@ export async function createOrder(req, res) {
     const productArray = [];
   
     let total = 0; 
-
-    for (let i = 0; i < orderDetails.orderDetails.length; i++) {
+    console.log(orderDetails.length);
+    for (let i = 0; i < orderDetails.length; i++) {
       
-      const productData = await product.findOne({ productid: orderDetails.orderDetails[i].productId });
+      const productData = await product.findOne({ productid: orderDetails[i].productId });
 
       if (productData == null) {
         res.json({
-          message: "product id " + orderDetails.orderDetails[i].productId + " not found"
+          message: "product id " + orderDetails[i].productId + " not found"
         });
         return;
       } else {
         productArray[i] = {
           name: productData.productname,
           price: productData.lasprice,
-          quantity: orderDetails.orderDetails[i].quantity,
+          quantity: orderDetails[i].quantity,
           discount: productData.price - productData.lasprice,
           image: productData.image[0]
         };
@@ -52,7 +52,10 @@ export async function createOrder(req, res) {
         orderedItems: productArray,
         orderId: newOrderId,
         email: req.user.email,
-        date: new Date()
+        date: new Date(),
+        phone: req.body.phone,
+        name: req.user.firstname + " " + req.user.lastname,
+        address: req.body.address,
     };
 
     const newOrderData = new Order(finalOrderDetails);
@@ -64,6 +67,7 @@ export async function createOrder(req, res) {
     });
 
   } catch (err) {
+    console.log(err);
     res.status(500).json({ 
       message: "Order not created", 
       error: err.message 

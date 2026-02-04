@@ -1,3 +1,4 @@
+import axios from "axios";
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import  jwt  from "jsonwebtoken";
@@ -110,6 +111,55 @@ export function loginUser(req,res){
 
  }
 
+export async function googleLogin(req, res) {
+    const token = req.body.token;
+
+    try {
+        
+        const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const { email, name, picture } = response.data;
+
+        let user = await User.findOne({ email: email });
+
+        if (!user) {
+         
+            user = new User({
+                email: email,
+                firstName: name,
+                profilePicture: picture,
+                type: "customer"
+            });
+            await user.save();
+        }
+
+      
+        const ourToken = jwt.sign(
+            { email: user.email, type: user.type, id: user._id },
+            process.env.JWT_KEY, 
+            { expiresIn: "24h" }
+        );
+
+  
+        res.json({
+            message: "Login Successful",
+            token: ourToken,
+            user: user
+        });
+
+    } catch (err) {
+        
+        console.error(err);
+        res.status(500).json({
+            message: "Google Login Failed",
+            error: err.message
+        });
+    }
+}
   
 // "email": "admin@system1.com", "password": "admin@123"
 // 

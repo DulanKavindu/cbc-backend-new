@@ -7,6 +7,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from "dotenv"
 import orderRouter from './routers/oder.js';
 import cors from "cors"
+import dns from "node:dns";
+
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 dotenv.config()
 const app = express();
