@@ -121,44 +121,63 @@ export async function googleLogin(req, res) {
                 Authorization: `Bearer ${token}`
             }
         });
+        const email = response.data.email;
 
-        const { email, name, picture } = response.data;
 
-        let user = await User.findOne({ email: email });
-
-        if (!user) {
-         
-            user = new User({
-                email: email,
-                firstName: name,
-                profilePicture: picture,
-                type: "customer"
-            });
-            await user.save();
-        }
-
+        const usersList = await User.find({email: email})
+    if(usersList.length > 0){
+       const user = usersList[0]
+      const token = jwt.sign({
+        email : user.email,
+        firstName : user.firstname,
+        lastName : user.lastname,
+        isBlocked : user.isBlocked,
+        type : user.type,
+        profilePicture : user.profilepic
+      } , process.env.SECRET)
       
-        const ourToken = jwt.sign(
-            { email: user.email, type: user.type, id: user._id },
-            process.env.JWT_KEY, 
-            { expiresIn: "24h" }
-        );
-
-  
-        res.json({
-            message: "Login Successful",
-            token: ourToken,
-            user: user
-        });
-
-    } catch (err) {
-        
-        console.error(err);
-        res.status(500).json({
-            message: "Google Login Failed",
-            error: err.message
-        });
+      res.json({
+        message: "User logged in",
+        token: token,
+        user : {
+          firstName : user.firstname,
+          lastName : user.lastname,
+          type : user.type,
+          profilePicture : user.profilepic,
+          email : user.email
+        }
+      })
     }
+    else{
+      
+      const newUserData = {
+        email: email,
+        firstName: response.data.given_name,
+        lastName: response.data.family_name,
+        type: "customer",
+        password: "ffffff",
+        profilePicture: response.data.picture
+      }
+      const user = new User(newUserData)
+      user.save().then(()=>{
+        res.json({
+          message: "User created"
+        })
+      }).catch((error)=>{
+        res.json({      
+          message: "User not created"
+        })
+      })
+
+    }
+
+  }catch(e){
+    res.json({
+      message: "Google login failed"
+    })
+  }
+
+
 }
   
 // "email": "admin@system1.com", "password": "admin@123"
