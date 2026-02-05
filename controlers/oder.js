@@ -1,6 +1,6 @@
 import Order from "../models/oder.js";
 import product from "../models/product.js";
-import { isCustomer } from "./user.js";
+import { isAdmin, isCustomer } from "./user.js";
 
 export async function createOrder(req, res) {
   if (!isCustomer(req, res)) {
@@ -128,4 +128,44 @@ export async function getQuter(req, res) {
       error: err.message 
     });
   }
+}
+
+export async function updateOrder(req,res){
+  if(!isAdmin(req,res)){
+    res.json({
+      message: "only admin can update order"
+    });
+    return;
+  }
+  const orderId = req.params.orderId;
+
+  const oder = await Order.findOne({orderId: orderId});
+
+  if(oder == null){
+    res.status(404).json({
+      message: "order id " + orderId + " not found"
+    });
+    return;
+  }
+  
+  const status = req.body.status;
+  const note = req.body.notes;
+
+  const updateData = await Order.findOneAndUpdate(
+    { orderId: orderId },
+    { status: status,
+     notes: note },
+  
+  ).then((data) => {
+    res.json({
+      message: "order updated",
+      data: data
+    });
+  }).catch((err) => {
+    res.status(500).json({
+      message: "order not updated",
+      error: err.message
+    });
+  });
+
 }
