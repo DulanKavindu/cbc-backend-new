@@ -8,6 +8,7 @@ import dotenv from "dotenv"
 import orderRouter from './routers/oder.js';
 import cors from "cors"
 import dns from "node:dns";
+import reviewRouter from './routers/review.js';
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/order", orderRouter);
+app.use("/review",reviewRouter)
 
 app.listen(5001, () => {
     console.log('Server is running on port 5001');

@@ -179,6 +179,19 @@ export async function googleLogin(req, res) {
 
 
 }
+export function getUser(req,res){
+    const user= req.user
+    if(user==null){
+        res.json({
+            massage:"you have to login"
+    })
+    return
+    }
+    res.json(
+        req.user
+    )
+
+}
   
 // "email": "admin@system1.com", "password": "admin@123"
 // 
